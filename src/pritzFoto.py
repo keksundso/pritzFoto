@@ -69,20 +69,34 @@ def scanFotoFolder(fotoFolderPath,sufix):
         print ""
         choosenIndex = 0
         while not int(choosenIndex) in range(1,len(listOfFiles)+1):
-            choosenIndex = input("Waehle >>index<< des Bildes das prozessiert werden soll: ")
+            choosenIndex = raw_input("Waehle >>index<< des Bildes das prozessiert werden soll: ")
             try:
                 choosenIndex = int(choosenIndex)
             except:
+
                 if choosenIndex == "c" or choosenIndex == "C":
                     abbruch = True
-                    choosenIndex = -1
-                print "Es muss eine ganze Zahl eingegeben werden!!!"
-        choosenIndex = choosenIndex-1
+                    choosenIndex = -1 #why
+                    break
+                else:
+                    print "Es muss eine ganze Zahl eingegeben werden!!!"
+        choosenIndex = choosenIndex-1 #why
         print ""
 
     if abbruch == False:
         frage = str(listOfFiles[choosenIndex])+" gefunden, um welche Kennziffer handelt es sich?: "
-        kn = raw_input(frage)  
+        
+        for n in range(10):
+            kn = raw_input(frage)  
+            try:
+                kn = int(kn)
+                break
+            except:
+                if kn == "c" or kn == "C":
+                    abbruch = True
+                    break
+
+    if abbruch == False:
 
         now = datetime.datetime.now()
         iD = "KN"+str(kn)+"_"+str(now).split(".")[0].replace(" ","_").replace(":","-")
@@ -106,9 +120,13 @@ def addEntryKnDic(knDic):
             else:
                 print ""
                 newBeschreibung = raw_input(4*">"+" Welcher Kleber verbirgt sich hinter Kennziffer "+str(newKn)+": " )
-                knDic[newKn] = newBeschreibung
-                showKnDic(knDic,newKn)
-                break
+                if newBeschreibung == "c" or newBeschreibung == "C":
+                    print 8*"!"+" Kein Kleber hinzugefuegt"+8*"!"
+                    break
+                else:
+                    knDic[newKn] = newBeschreibung
+                    showKnDic(knDic,newKn)
+                    break
         except:
             if newKn == "c" or newKn == "C":
                 abbruch = True
@@ -153,6 +171,7 @@ def give_gui():
     scanFotoFolderButton = Tk.Button(master = root, text = 'Scan newFoto Ordner' ,activebackground="red", command=guiCallscanFotoFolder)
     closeButton = Tk.Button(master = root, text = 'Close',activebackground="red", command=schiesen)
     addknDicButton = Tk.Button(master = root, text = 'Add Kennziffer',activebackground="red", command=guiCallknDic)
+    helpButton = Tk.Button(master = root, text = 'Hilfe',activebackground="red", command=guiCallhelp)
  
 
     #Anordnung
@@ -165,14 +184,32 @@ def give_gui():
 
     scanFotoFolderButton.place(relx=0.5, rely=0.1, anchor="n")
 
-    closeButton.place(relx=0.5, rely=0.9, anchor="s")
-
+    closeButton.place(relx=0.8, rely=0.9, anchor="s")
+    helpButton.place(relx=0.2, rely=0.9, anchor="s")
+    """
+    T = Tk.Text(root, height=2, width=30)
+    T.pack()
+    T.insert(0.9,'Hinweise: \n ->1. keine Umlaute oder aenliches Verwenden \n ->2. Wenn verklickt mit "c" kann man jederzeit die akutelle Eingabe Abbrechen')
+    """
     Tk.mainloop()
 
 
 
 
 ####Function Calls
+def guiCallhelp():
+    print ""
+    print ""
+    print "Hinweise:"
+    print '--> Nur ASCII Zeichen verwenden:'
+    print '     d.h. keine Umlaute, kein "scharfes S" oder aehnliches'
+    print ""
+    print '--> Bei Falscheingaben oder Verklicken:'
+    print '      mit "c" oder "C" Eingabe, gelangt man zurueck in den Startzustand'
+    print ""
+    print "--> Bei Problemen bitte wenden an"
+    print "     Christoph.Neu[at]gmx.net oder "
+    print "     015789126453 (wenns mal schnell gehen muss)."
 def guiCallknDic():
     knDic = addEntryKnDic(pickle.load( open( "knDic.p", "rb" ) ))
 def guiCallshowKnDic():
@@ -188,7 +225,8 @@ give_gui()
 
 
 
-
+##ToDo
+#-check wheather Kn is in list of Kn, wenn net dann fragen ob hinzufuegen
 
 
 ##Use with caution  <<<Functions<>>>
